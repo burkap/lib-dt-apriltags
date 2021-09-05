@@ -329,10 +329,12 @@ class Detector(object):
             self.libc.apriltag_detector_destroy.restype = None
             self.libc.apriltag_detector_destroy(self.tag_detector_ptr)
 
-    def detect(self, img, estimate_tag_pose=False, camera_params=None, tag_size=None):
+    def detect(self, img, estimate_tag_pose=False, camera_params=None, tag_size=None, size_dict={}):
 
         '''Run detectons on the provided image. The image must be a grayscale
-image of type numpy.uint8.'''
+image of type numpy.uint8. If estimate_tag_pose is enabled, the size of tags
+can be specified in size_dict. For unspecified tags, the value given as
+tag_size is considered default. '''
 
         assert len(img.shape) == 2
         assert img.dtype == numpy.uint8
@@ -373,6 +375,8 @@ image of type numpy.uint8.'''
                     raise Exception('camera_params must be provided to detect if estimate_tag_pose is set to True')
                 if tag_size==None:
                     raise Exception('tag_size must be provided to detect if estimate_tag_pose is set to True')
+                if str(detection.tag_id) in size_dict:
+                    tag_size = size_dict[str(detection.tag_id)]
 
                 camera_fx, camera_fy, camera_cx, camera_cy = [ c for c in camera_params ]
 
